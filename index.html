@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Score Card</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+    <script defer src="dom.js"></script>
+    <script defer src="start.js"></script>
+</head>
+
+<body>
+    <h1>Digital Score Card</h1>
+    <div id="start">
+        <p id="courseSelected"></p>
+
+        <div id="course">
+            <select id="courseSelect">
+                <option value="https://fpgscore.fredricpersson2.repl.co/info.json">Villshärads Fotbollsgolf</option>
+            </select>
+
+            <select id="holeList">
+                <option></option>
+            </select>
+
+            <button id="selectButton">Välj bana</button>
+        </div>
+
+        <div id="finish">
+            <h3>Lägg till spelare</h3>
+            <div id="playerList"></div>
+            <button id="startButton">Starta spelet</button>
+        </div>
+    </div>
+
+    <div id="game">
+        <div id="info">
+            <h2 id="holeNumber"></h2>
+            <p id="holeRules"></p>
+        </div>
+
+        <div id="table">
+            <div id="players">
+                <div id="holes">
+                    <div class="cn flex">
+                        <p>&nbsp;</p>
+                    </div>
+
+                    <div class="flex">
+                        <div class="f cn">
+                            <p>Hål</p>
+                        </div>
+                        <div class="f cn">
+                            <p>Par</p>
+                        </div>
+                    </div>
+
+                    <div class="cn flex" id="totalPointsText">
+                        <p><b>TOT</b></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="actions">
+            <button id="holeAction" style="margin-bottom: 50px;">Nästa hål</button>
+        </div>
+    </div>
+
+    <div style="height: 40rem">
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,97 @@
+body {
+    text-align: center;
+    margin: 0;
+}
+
+.cn {
+    border-bottom: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
+#players div {
+    background-color: beige;
+    flex: 2;
+}
+
+#players>div:first-child{
+    flex: 1;
+}
+
+.f {
+    display: flex;
+}
+
+.f p {
+    flex: 1;
+}
+
+.flex {
+    display: flex;
+    justify-content: center;
+}
+
+input[type=number]{
+    width: 100%; 
+    text-align: center;
+    border: none;
+}
+
+#table {
+    display: flex;
+    margin: 0 auto;
+    width: 50%;
+}
+
+@media screen and (max-width: 768px){
+    #table {
+        width: 100%;
+    }
+}
+
+#info {
+    margin-top: 60px;
+    margin-bottom: 60px;
+}
+
+#actions {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    padding-top: 20px;
+    height: 40px;
+    background-color: orange;
+}
+
+#holeList {
+    display: none;  
+}
+
+#finish {
+    display: none;
+}
+
+#game {
+    display: none;
+}
+
+#playerList {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#playerList input {
+    width: 200px;
+    display: inline-block;
+}
+
+#startButton {
+    margin-top: 20px;
+}
+
+#players {
+    display: flex;
+    width: 100%;
+}
