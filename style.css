@@ -59,7 +59,7 @@ input[type=number]{
     width: 100%;
     bottom: 0;
     padding-top: 20px;
-    height: 40px;
+    height: 60px;
     background-color: orange;
 }
 
@@ -83,8 +83,9 @@ input[type=number]{
 }
 
 #playerList input {
-    width: 200px;
+    width: 75%;
     display: inline-block;
+    font-size: 2rem;
 }
 
 #startButton {
@@ -94,4 +95,29 @@ input[type=number]{
 #players {
     display: flex;
     width: 100%;
+}
+
+h1 {
+    font-size: 3rem;
+}
+
+h2 {
+    font-size: 2.5rem;
+}
+
+#info p {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.7rem;
+}
+
+
+select, button, input {
+  font-size: 1.2rem;
+}
+
+#finish button {
+    font-size: 1.5rem;
 }

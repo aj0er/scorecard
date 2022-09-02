@@ -35,3 +35,11 @@ function createNum(){
 
     return input;
 }
+
+function createHole(hole, par){
+    let main = document.createElement("div");
+    main.className = "flex";
+    main.appendChild(createTextDiv(createText(hole)));
+    main.appendChild(createTextDiv(createText(par)));
+    return main;
+}

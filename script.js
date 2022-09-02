@@ -6,16 +6,30 @@ const holeNumber = document.getElementById("holeNumber");
 const holeRules = document.getElementById("holeRules");
 
 let currentHole = -1;
-let activeInputs = [];
 let totalPointsElement = document.getElementById("totalPointsText");
 let playerNodes = [];
 let store = [];
 let currentCourse = null;
 
+let ended = false;
+let startHole = 0;
+
 const holeButton = document.getElementById("holeAction"); 
 holeButton.addEventListener("click", () => {
+    if(ended){
+        endGame();
+        return;
+    }
+
     if(holeButton.innerText == "Fyll i slag"){
         startInput();
+
+        if(currentHole == startHole - 1){
+            ended = true;
+            holeButton.innerText = "Avsluta spelet";
+            return;
+        }
+
         holeButton.innerText = "Nästa hål";
     } else {
         nextHole();
@@ -25,6 +39,14 @@ holeButton.addEventListener("click", () => {
 document.getElementById("startButton").addEventListener("click", startGame);
 
 function startGame(){
+    startHole = parseInt(holeList.value);
+
+    if(isNaN(startHole))
+        startHole = 0;
+    
+    startHole -= 1;
+    currentHole = startHole - 1;
+
     document.getElementById("game").style.display = "block";
     document.getElementById("start").style.display = "none";
 
@@ -36,7 +58,11 @@ function startGame(){
         players.push(player.value);
     }
 
-    players.forEach(player => addPlayerNode(player, true));
+    players.forEach(player => {
+        addPlayerNode(player, true);
+        store.push([]);
+    });
+
     nextHole();
 }
 
@@ -61,7 +87,6 @@ function addPlayerNode(name, first){
 
     players.appendChild(main);
     playerNodes.push(main);
-    store.push([]);
 }
 
 function updatePlayerValue(playerIdx, hole, value){
@@ -70,20 +95,12 @@ function updatePlayerValue(playerIdx, hole, value){
     pointText.innerText = isNaN(value) ? "-" : value.toString();
 }
 
-function createHole(hole, par){
-    let main = document.createElement("div");
-    main.className = "flex";
-    main.appendChild(createTextDiv(createText(hole)));
-    main.appendChild(createTextDiv(createText(par)));
-    return main;
-}
-
 function nextHole(){
+    window.scrollTo(0, 0); // Scrolla till toppen så att användaren kan se regler för hålet
     currentHole++;
-
-    if(currentCourse.court.length == currentHole){
-        alert("Slut!");
-        return;
+    
+    if(currentHole == currentCourse.court.length){
+        currentHole = 0;
     }
 
     let hole = currentCourse.court[currentHole];
@@ -95,8 +112,8 @@ function nextHole(){
 function startInput(){
     let hole = currentCourse.court[currentHole];
     holes.insertBefore(createHole(currentHole + 1, hole.par), totalPointsElement);
+    let holeIdx = holes.children.length - 4;
 
-    activeInputs = [];
     for(let i=0;i<playerNodes.length;i++){
         let player = playerNodes[i];
         let playerHole = createPlayerHole();
@@ -105,14 +122,19 @@ function startInput(){
         let input = playerHole.input;
         input.hole = currentHole;
         input.player = i;
-
-        activeInputs.push(input);
+        input.holeIdx = holeIdx;
         input.addEventListener("focusout", handleNumInput);
-        player.insertBefore(holeEl, player.totalPoints);
-        store[i].push(0);
-    }
 
-    activeInputs[0].focus();
+        player.insertBefore(holeEl, player.totalPoints);
+
+        if(i == 0)
+            input.focus(); // Fokusera på det första input-elementet
+
+        store[i].push({
+            hole: currentHole,
+            value: 0,
+        });
+    }
 }
 
 function calculatePoints(strokes, par){
@@ -124,32 +146,31 @@ function calculatePoints(strokes, par){
 
 function handleNumInput(e){
     let target = e.target;
-    let index = activeInputs.indexOf(target);
-    if(index != -1){
-        if(index != activeInputs.length - 1){
-            activeInputs[index + 1].focus();
-        } else {
-            // Rensa inputfälten då vi nått slutet av raden, vi vill inte börja om från början om man vill ändra individuella fält.
-            activeInputs = [];
-        }
-    }
+    let value = parseInt(target.value);
 
-    value = parseInt(target.value);
-
-    store[target.player][target.hole] = isNaN(value) ? 0 : value;
+    let player = target.player;
+    let hole = target.hole;
+    let holeIdx = target.holeIdx;
 
     let par = currentCourse.court[target.hole].par;
-    let points = calculatePoints(value, par); 
-    updatePlayerValue(target.player, target.hole, points);
 
-    playerNodes[target.player].totalPoints.children[0].innerText = getTotalPoints(target.player);
+    store[player][holeIdx].value = value;
+
+    let points = calculatePoints(value, par); 
+    updatePlayerValue(player, holeIdx, points);
+
+    let totalPointsElement = playerNodes[player].totalPoints.children[0]; // p-taggen inne i total points diven
+    totalPointsElement.innerText = getTotalPoints(player);
 }
 
 function getTotalPoints(playerIdx){
     let total = 0;
-    for(let hole in store[playerIdx]){
-        strokes = store[playerIdx][hole];
-        total += calculatePoints(strokes, currentCourse.court[hole].par);
+    for(let holeInfo of store[playerIdx]){
+        let strokes = holeInfo.value;
+        let par = currentCourse.court[holeInfo.hole].par;
+
+        let points = calculatePoints(strokes, par);
+        total += isNaN(points) ? 0 : points;
     }
 
     return total;
