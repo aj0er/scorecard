@@ -52,7 +52,7 @@ function onPlayerInput(e){
 
 function createPlayerInput(){
     let input = document.createElement("input");
-    input.placeholder = "Ange namn";
+    input.placeholder = "Ange förnamn";
     input.autocomplete = false;
     input.addEventListener("input", onPlayerInput);
     return input;

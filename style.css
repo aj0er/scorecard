@@ -5,16 +5,26 @@ body {
 
 .cn {
     border-bottom: 1px solid black;
-    border-left: 1px solid black;
     border-right: 1px solid black;
 }
 
-#players div {
-    background-color: beige;
+#players div, #scores div {
     flex: 2;
 }
 
-#players>div:first-child{
+.beige div {
+    background-color: rgb(252, 243, 228);
+}
+
+.green div {
+    background-color: rgb(251, 233, 233);
+}
+
+#scoretable {
+    margin-bottom: 20px;
+}
+
+#players>div:first-child, #scores>div:first-child{
     flex: 1;
 }
 
@@ -37,15 +47,27 @@ input[type=number]{
     border: none;
 }
 
-#table {
+#win {
+    display: none;
+}
+
+#table, #scoretable {
     display: flex;
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
     width: 50%;
+    border-left: 1px solid black;
+    border-top: 1px solid black;
 }
 
 @media screen and (max-width: 768px){
-    #table {
+    #table, #scoretable {
         width: 100%;
+    }
+
+    #scores>div:first-child {
+        flex: 3;
     }
 }
 
@@ -92,7 +114,7 @@ input[type=number]{
     margin-top: 20px;
 }
 
-#players {
+#players, #scores {
     display: flex;
     width: 100%;
 }

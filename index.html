@@ -19,6 +19,7 @@
 
         <div id="course">
             <select id="courseSelect">
+                <option value="https://scorecard.adajoe0319.repl.co/court.json">Test</option>
                 <option value="https://fpgscore.fredricpersson2.repl.co/info.json">Villshärads Fotbollsgolf</option>
             </select>
 
@@ -42,8 +43,40 @@
             <p id="holeRules"></p>
         </div>
 
+        <div id="win">
+            <h3 id="winnerName"></h3>
+
+            <div id="scoretable">
+                <div id="scores" class="green">
+                    <div>
+                        <div class="cn flex">
+                            <p>Term</p>
+                        </div>
+                        <div class="f cn">
+                            <p><i>Double Bogey</i></p>
+                        </div>
+                        <div class="f cn">
+                            <p><i>Bogey</i></p>
+                        </div>
+                        <div class="f cn">
+                            <p><i>Par</i></p>
+                        </div>
+                        <div class="f cn">
+                            <p><i>Birdie</i></p>
+                        </div>
+                        <div class="f cn">
+                            <p><i>Eagle</i></p>
+                        </div>
+                        <div class="f cn">
+                            <p><i>Hole-in-one</i></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="table">
-            <div id="players">
+            <div id="players" class="beige">
                 <div id="holes">
                     <div class="cn flex">
                         <p>&nbsp;</p>
@@ -51,10 +84,10 @@
 
                     <div class="flex">
                         <div class="f cn">
-                            <p>Hål</p>
+                            <p id="holeText">Hål</p>
                         </div>
                         <div class="f cn">
-                            <p>Par</p>
+                            <p id="parText">Par</p>
                         </div>
                     </div>
 

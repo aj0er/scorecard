@@ -32,6 +32,7 @@ function createText(value){
 function createNum(){
     let input = document.createElement("input");
     input.type = "number";
+    input.min = 1;
 
     return input;
 }
