@@ -1,0 +1,4 @@
+- Save
+- End game
+- Remove player
+- Table for > 4 players
