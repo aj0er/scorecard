@@ -8,7 +8,7 @@
     <title>Digital Score Card</title>
     <link rel="stylesheet" href="style.css">
     <script defer src="script.js"></script>
-    <script defer src="dom.js"></script>
+    <script defer src="util.js"></script>
     <script defer src="start.js"></script>
 </head>
 
@@ -19,7 +19,7 @@
 
         <div id="course">
             <select id="courseSelect">
-                <option value="https://scorecard.adajoe0319.repl.co/court.json">Test</option>
+                <option value="https://scorecard.adajoe0319.repl.co/court.json">Test 3 hål</option>
                 <option value="https://fpgscore.fredricpersson2.repl.co/info.json">Villshärads Fotbollsgolf</option>
             </select>
 
@@ -39,7 +39,10 @@
 
     <div id="game">
         <div id="info">
-            <h2 id="holeNumber"></h2>
+            <div>
+                <span id="holeNumber"></span>
+                <b id="holePar"></b>
+            </div>
             <p id="holeRules"></p>
         </div>
 
@@ -102,6 +105,8 @@
             <button id="holeAction" style="margin-bottom: 50px;">Nästa hål</button>
         </div>
     </div>
+
+    <button id="removeSaved">Rensa sparat spel</button>
 
     <div style="height: 40rem">
     </div>

@@ -44,3 +44,14 @@ function createHole(hole, par){
     main.appendChild(createTextDiv(createText(par)));
     return main;
 }
+
+function scrollToTop(){
+    window.scrollTo(0, 0);
+}
+
+function calculatePoints(strokes, par){
+    if(isNaN(strokes))
+        return NaN;
+
+    return strokes - par;
+}

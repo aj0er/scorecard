@@ -6,12 +6,14 @@ const holeList = document.getElementById("holeList");
 const finish = document.getElementById("finish");
 const course = document.getElementById("course");
 const playerList = document.getElementById("playerList");
+const removeSaved = document.getElementById("removeSaved");
 
 selectButton.addEventListener("click", selectCourse);
 
 async function selectCourse(){
     if(currentCourse == null){
-        currentCourse = await fetchCourseInfo(courseSelect.value);
+        currentCourseUrl = courseSelect.value;
+        currentCourse = await fetchCourseInfo(currentCourseUrl);
 
         courseSelected.innerText = currentCourse.name;
         holeList.style.display = "inline";
@@ -27,6 +29,54 @@ async function selectCourse(){
         finish.style.display = "block"; 
         startCourse(holeList.value);
     }
+}
+
+document.getElementById("startButton").addEventListener("click", prepareStart);
+
+(async function(){
+    restoreSavedGame();
+})();
+
+async function restoreSavedGame(){
+    let savedGameStr = window.localStorage.getItem("savedGame");
+    if(savedGameStr != null){
+        let game = JSON.parse(savedGameStr);
+        currentCourse = await fetchCourseInfo(game.course);
+        currentCourseUrl = game.course;
+
+        startGame(game.startHole, game.players, game.currentHole);
+
+        removeSaved.style.display = "inline";
+        removeSaved.addEventListener("click", () => {
+            window.localStorage.removeItem("savedGame");
+            location.reload();
+        });
+    }
+}
+
+function prepareStart(){
+    playerList.removeChild(playerList.lastChild);
+    startHole = parseInt(holeList.value);
+
+    if(isNaN(startHole))
+        startHole = 0;
+
+    const players = [];
+    let idCounter = 0;
+    for(let input of playerList.children){
+        if(input.value == "")
+            continue;
+
+        players.push({
+            id: idCounter,
+            name: input.value,
+            store: [],
+        });
+
+        idCounter++;
+    }
+
+    startGame(startHole, players);
 }
 
 function startCourse(id){

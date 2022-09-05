@@ -85,6 +85,20 @@ input[type=number]{
     background-color: orange;
 }
 
+#removeSaved {
+    display: none;
+    margin-top: 20px;
+}
+
+#info span {
+    font-size: 48px;
+}
+
+#par {
+    margin-left: 20px;
+    font-size: 20px;
+}
+
 #holeList {
     display: none;  
 }
