@@ -183,7 +183,7 @@ function addPlayerNode(player){
 
     // Spelarens namndiv (namn + "ta bort"-knapp)
     let nameDiv = document.createElement("div");
-    nameDiv.className = "flex border";
+    nameDiv.className = "flex flex-center border";
 
     let nameText = document.createElement("p");
     let text = document.createTextNode(player.name);
@@ -202,7 +202,7 @@ function addPlayerNode(player){
 
     // Slag + Poäng text
     let headerDiv = document.createElement("div");
-    headerDiv.className = "flex";
+    headerDiv.className = "flex flex-center";
 
     let strokes = createTextDiv(createText(shortTextMode ? strokesText.substring(0, 1) : strokesText));
     let points  = createTextDiv(createText(shortTextMode ? pointsText.substring(0, 1) : pointsText));
