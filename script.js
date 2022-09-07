@@ -99,6 +99,8 @@ function startGame(start, gamePlayers, currentHoleSaved = undefined){
         }
     });
 
+    scrollToTop();
+
     updateHoleInfo(currentHole);
     checkEnd();
     saveState();
@@ -181,7 +183,7 @@ function addPlayerNode(player){
 
     // Spelarens namndiv (namn + "ta bort"-knapp)
     let nameDiv = document.createElement("div");
-    nameDiv.className = "cn flex";
+    nameDiv.className = "flex border";
 
     let nameText = document.createElement("p");
     let text = document.createTextNode(player.name);

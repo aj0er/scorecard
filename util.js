@@ -17,7 +17,7 @@ function createPlayerHole(){
 
 function createTextDiv(value){
     let div = document.createElement("div");
-    div.className = "f cn";
+    div.className = "flex border";
     div.appendChild(value);
     return div;
 }

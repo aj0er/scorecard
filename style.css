@@ -3,7 +3,7 @@ body {
     margin: 0;
 }
 
-.cn {
+.border {
     border-bottom: 1px solid black;
     border-right: 1px solid black;
 }
@@ -28,11 +28,11 @@ body {
     flex: 1;
 }
 
-.f {
+.flex {
     display: flex;
 }
 
-.f p {
+.flex p {
     flex: 1;
 }
 

@@ -9,6 +9,11 @@ const playerList = document.getElementById("playerList");
 const removeSaved = document.getElementById("removeSaved");
 
 selectButton.addEventListener("click", selectCourse);
+document.getElementById("startButton").addEventListener("click", prepareStart);
+
+(async function(){
+    restoreSavedGame();
+})();
 
 async function selectCourse(){
     if(currentCourse == null){
@@ -31,12 +36,6 @@ async function selectCourse(){
     }
 }
 
-document.getElementById("startButton").addEventListener("click", prepareStart);
-
-(async function(){
-    restoreSavedGame();
-})();
-
 async function restoreSavedGame(){
     let savedGameStr = window.localStorage.getItem("savedGame");
     if(savedGameStr != null){
@@ -55,7 +54,6 @@ async function restoreSavedGame(){
 }
 
 function prepareStart(){
-    playerList.removeChild(playerList.lastChild);
     startHole = parseInt(holeList.value);
 
     if(isNaN(startHole))
@@ -64,16 +62,21 @@ function prepareStart(){
     const players = [];
     let idCounter = 0;
     for(let input of playerList.children){
-        if(input.value == "")
+        if(input.value.trim() == "")
             continue;
 
         players.push({
             id: idCounter,
-            name: input.value,
+            name: input.value.trim(),
             store: [],
         });
 
         idCounter++;
+    }
+
+    if(players.length < 1){
+      alert("Det måste finnas minst en spelare i spelet!");
+      return;
     }
 
     startGame(startHole, players);
@@ -89,6 +92,9 @@ function onPlayerInput(e){
     let element = e.target;
     let children = Array.from(playerList.children); 
     let index = children.indexOf(element);
+
+    if(index == -1)
+        return;
 
     if(index == children.length - 1){
         playerList.appendChild(createPlayerInput());
