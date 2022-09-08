@@ -165,6 +165,7 @@ function endGame(){
     // Lägg till alla spelares "golftermer", t.ex. "Birdie", "Hole-in-one"
     for(let player of players){
         const scoreMap = calculateScoreTerms(player);
+        const totalStrokes = getTotalStrokes(player);
 
         let main = document.createElement("div");
         main.appendChild(createTextDiv(createText(player.name)));
@@ -174,6 +175,7 @@ function endGame(){
             main.appendChild(createTextDiv(createText(score)));
         }
 
+        main.appendChild(createTextDiv(createText(totalStrokes.toString())));
         scores.appendChild(main);
     }
 }
@@ -359,6 +361,17 @@ function removePlayer(e){
     delete playerNodes[playerId];
     players = players.filter(p => p.id != playerId);
     saveState();
+}
+
+function getTotalStrokes(player){
+    let total = 0;
+
+    for(let holeInfo of player.store){
+        let strokes = holeInfo.value;
+        total += isNaN(strokes) ? 0 : strokes;
+    }
+
+    return total;
 }
 
 function getTotalPoints(player){
