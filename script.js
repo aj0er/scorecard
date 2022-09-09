@@ -357,7 +357,12 @@ function startInput(){
         }
 
         if(first){
-            input.focus(); // Fokusera på det första input-elementet
+            if(!largeInputs){
+                input.focus(); // Fokusera på det första input-elementet
+            } else {
+                window.scrollTo(0, 300);
+            }
+
             first = false;
         }
 
