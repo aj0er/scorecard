@@ -345,6 +345,7 @@ function startInput(){
 
         let normal = addPlayerInput(playerId);
         addInputHandler(normal);
+        attachInputInfo(normal, playerId, hole, holeIdx);
         
         if(!largeInputs){
             input = normal; 
@@ -352,11 +353,8 @@ function startInput(){
             table.style.display = "none";
             input = addLargeInput(player.name);
             addInputHandler(input);
+            attachInputInfo(input, playerId, hole, holeIdx);
         }
-
-        input.hole = hole;
-        input.player = playerId;
-        input.holeIdx = holeIdx;
 
         if(first){
             input.focus(); // Fokusera på det första input-elementet
