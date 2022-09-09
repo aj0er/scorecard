@@ -37,7 +37,10 @@ function createLargeInput(name){
     removeBtn.innerText = "-";
     removeBtn.addEventListener("click", (e) => {
         let val = parseInt(input.value);
-        input.value = isNaN(val) ? -1 : val - 1;
+        if(val <= 1) // Golfslag måste vara minst 1
+            return;        
+
+        input.value = isNaN(val) ? 1 : val - 1;
         input.dispatchEvent(new Event("change"));
     });
 

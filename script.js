@@ -383,9 +383,8 @@ function handleNumInput(target){
 
     let points = calculatePoints(value, par); 
 
-    if(largeInputs){
+    if(largeInputs) // Uppdatera värdet i den faktiska tabellen
         updatePlayerPointsValue(playerId, holeIdx, value);
-    }
 
     updatePlayerPointsText(playerId, holeIdx, points);
     updateTotalPoints(player);

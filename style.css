@@ -56,6 +56,11 @@ input[type=checkbox] {
     margin-bottom: 10px;
 }
 
+#a11y-game p {
+    font-size: 20px;
+    font-weight: bold;
+}
+
 #a11y-game input {
     border-top: 1px solid black;
     border-bottom: 1px solid black;
@@ -86,6 +91,13 @@ input[type=checkbox] {
     width: 50%;
     border-left: 1px solid black;
     border-top: 1px solid black;
+}
+
+@media screen and (min-width: 1080px){
+    #a11y-game {
+        width: 50%;
+        display: inline-block;
+    }    
 }
 
 @media screen and (max-width: 1080px){
