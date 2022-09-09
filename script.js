@@ -65,6 +65,14 @@ function checkEnd(){
     return false;
 }
 
+/**
+ * Startar spelet. Skapar alla spelarkolumner och utför andra DOM-operationer för att sätta upp spelet.
+ * Återställer ett tidigare spel om sådant finns sparat.
+ * @param {*} start Hålet att börja på
+ * @param {*} gamePlayers Lista med spelare som spelet ska innehålla
+ * @param {*} largeBoxes Om spelet ska köra i a11y-läge med stora inputrutor
+ * @param {*} currentHoleSaved Det nuvarande hålet (används då spelet återställs)
+ */
 function startGame(start, gamePlayers, largeBoxes, currentHoleSaved = undefined){
     let isRestored = currentHoleSaved != undefined;
 
@@ -109,6 +117,11 @@ function startGame(start, gamePlayers, largeBoxes, currentHoleSaved = undefined)
     saveState();
 }
 
+/**
+ * Återställer en spelare från tidigare spel. 
+ * @param {*} player Spelare att återställa.
+ * @param {*} idx Spelarens index i huvudlistan.
+ */
 function restorePlayer(player, idx){
     let holes = player.store;
     
@@ -130,7 +143,7 @@ function restorePlayer(player, idx){
         updatePlayerPointsText(player.id, holeIdx, points);
     }
 
-    updateTotalPoints(player);
+    updateTotalPointsElement(player);
 }
 
 function addInputHandler(input){
@@ -165,7 +178,7 @@ function endGame(){
     let winningPlayer = null;
     for(let i in players){ // Hitta spelaren med minst poäng (bäst resultat)
         let player = players[i];
-        let points = getTotalPoints(player)[0];
+        let points = calculateTotalPointsAndStrokes(player)[0];
 
         if(i == 0 || points <= prev){
             prev = points;
@@ -178,7 +191,7 @@ function endGame(){
 
     // Lägg till alla spelares "golftermer", t.ex. "Birdie", "Hole-in-one"
     for(let player of players){
-        const scoreMap = calculateScoreTerms(player);
+        const scoreMap = generateScoreTermsMap(player);
 
         let main = document.createElement("div");
         main.appendChild(createTextDiv(createText(player.name)));
@@ -192,6 +205,12 @@ function endGame(){
     }
 }
 
+/**
+ * Skapar en ny spelarkolumn i tabellen. 
+ * Denna innehåller allt om varje spelare, namn, ta bort-knapp, poänginput, totala poäng.
+ * Lägger till lämpliga event listeners till olika element.
+ * @param {*} player Spelare att skapa kolumn för.
+ */
 function addPlayerNode(player){
     let main = document.createElement("div");
 
@@ -206,7 +225,7 @@ function addPlayerNode(player){
     removeBtn.player = player.id;
     removeBtn.style.cursor = "pointer";
     removeBtn.style.marginLeft = "5px";
-    removeBtn.addEventListener("click", removePlayer);
+    removeBtn.addEventListener("click", handleRemovePlayer);
 
     nameText.appendChild(text);
     nameText.appendChild(removeBtn);
@@ -251,6 +270,10 @@ function updatePlayerPointsValue(playerId, hole, value){
     scoreInput.value = value;
 }
 
+/**
+ * Advancerar spelet till nästa hål.
+ * Sparar spelets status, scrollar till toppen, visar info om det nya hålet
+ */
 function nextHole(){
     if(largeInputs)
         restoreTableView();
@@ -265,6 +288,10 @@ function nextHole(){
     saveState();
 }
 
+/**
+ * Uppdaterar hålinfo som par och regler, uppdaterar även knappen för antingen nästa hål eller fylla i slag. 
+ * @param {*} idx Hålets index
+ */
 function updateHoleInfo(idx){
     let hole = currentCourse.court[idx];
     holeRules.innerText = hole.info;
@@ -278,8 +305,10 @@ function updateHoleInfo(idx){
     }
 }
 
+/**
+ * @returns Om slag har fyllts i för det nuvarande hålet.
+ */
 function hasCurrentInput(){
-    // Kolla om det nuvarande hålet har textrutor, har fyllt i slag.
     let first = players[0].store;
     if(first.length > 0){
         let last = first[first.length - 1];
@@ -289,6 +318,11 @@ function hasCurrentInput(){
     return false;
 }
 
+/**
+ * Lägger till en input för spelaren i tabellen.
+ * @param {*} playerId Spelarid att skapa input för.
+ * @returns Input-element att mata in slag i.
+ */
 function addPlayerInput(playerId){
     let player = playerNodes[playerId];
     let playerHole = createPlayerHole();
@@ -300,21 +334,38 @@ function addPlayerInput(playerId){
     return input;
 }
 
+/**
+ * Lägger till information så att input-elementet kan mappas till rätt spelare och hål.
+ */
 function attachInputInfo(input, playerId, hole, holeIdx){
     input.hole = hole;
     input.player = playerId;
     input.holeIdx = holeIdx;
 }
 
+/**
+ * Skapar en "hål-rad" vid sidan av poängtabellen med nummer/par
+ * @param {*} currentHole Hålet att skapa element för
+ */
 function addHole(currentHole){
     let hole = currentCourse.court[currentHole];
     holes.insertBefore(createHole(currentHole + 1, hole.par), totalPointsElement);
 }
 
+/**
+ * Hämtar en spelare beroende på id.
+ * @param {*} id Spelarens id
+ * @returns Funnen spelare eller null
+ */
 function getPlayerById(id){
     return players.find(p => p.id == id);
 }
 
+/**
+ * Skapar ett stort inputelement i a11y-läge (plus/minus knappar)
+ * @param {*} playerName Spelarens namn
+ * @returns Input-fältet för att mata in poäng
+ */
 function addLargeInput(playerName){
     let elements = createLargeInput(playerName);
     let main = elements.main;
@@ -324,14 +375,22 @@ function addLargeInput(playerName){
     return input;
 }
 
+/**
+ * Återställer vyn till tabellvyn då spelaret är i a11y-läge.
+ */
 function restoreTableView(){
     if(!largeInputs)
         return;
 
-        table.style.display = "block";
-        a11yGame.innerHTML = "";
+    table.style.display = "block";
+    a11yGame.innerHTML = "";
 }
 
+/**
+ * Påbörjar input genom att lägga till inputs för alla spelare.
+ * Fokuserar/scrollar så att användaren kan se input-fältet.
+ * Lägger till event listener då input ändras.
+ */
 function startInput(){
     addHole(currentHole);
 
@@ -375,6 +434,13 @@ function startInput(){
     }
 }
 
+/**
+ * Hanterar input då spelaren matar in slag.
+ * Detta läggs till på alla input-element i tabellen eller i a11y-läge.
+ * 
+ * Kalkylerar och uppdaterar spelarens poäng i minnet, uppdaterar lämpliga element i tabellen.
+ * @param {*} target Input-element som ändrat värde
+ */
 function handleNumInput(target){
     let value = parseInt(target.value);
 
@@ -394,17 +460,24 @@ function handleNumInput(target){
         updatePlayerPointsValue(playerId, holeIdx, value);
 
     updatePlayerPointsText(playerId, holeIdx, points);
-    updateTotalPoints(player);
+    updateTotalPointsElement(player);
 
     saveState();
 }
 
-function updateTotalPoints(player){
+/**
+ * Uppdaterar spelarens totala poäng-element genom att först kalkylera totala slag och poäng.
+ * @param {*} player Spelare att uppdatera elementet för.
+ */
+function updateTotalPointsElement(player){
     let totalPointsElement = playerNodes[player.id].totalPoints.children[0]; // p-taggen inne i total points diven
-    let totalPoints = getTotalPoints(player);
+    let totalPoints = calculateTotalPointsAndStrokes(player);
     totalPointsElement.innerText = `${totalPoints[0]} (${totalPoints[1]})`;
 }
 
+/**
+ * Sparar spelets status i localStorage.
+ */
 function saveState(){
     let state = {
         players: players,
@@ -417,7 +490,12 @@ function saveState(){
     window.localStorage.setItem("savedGame", JSON.stringify(state));
 }
 
-function removePlayer(e){
+/**
+ * Hanterar eventet då en spelare ska tas bor genom att klicka på knappen brevid hens namn.
+ * Tar bort spelarens nod och tar bort hen från spelarlistan. 
+ * @param {*} e Event
+ */
+function handleRemovePlayer(e){
     if(ended)
         return;
 
@@ -439,18 +517,12 @@ function removePlayer(e){
     saveState();
 }
 
-function getTotalStrokes(player){
-    let total = 0;
-
-    for(let holeInfo of player.store){
-        let strokes = holeInfo.value;
-        total += isNaN(strokes) ? 0 : strokes;
-    }
-
-    return total;
-}
-
-function getTotalPoints(player){
+/**
+ * Kalkylerar en spelares totala poäng och totala slag genom att iterera över alla hål spelaren varit på.
+ * @param {*} player Spelare att kalkylera för
+ * @returns En array [totala poäng, totala slag]
+ */
+function calculateTotalPointsAndStrokes(player){
     let totalStrokes = 0;
     let totalPoints = 0;
 
@@ -466,7 +538,15 @@ function getTotalPoints(player){
     return [totalPoints, totalStrokes];
 }
 
-function calculateScoreTerms(player){
+/**
+ * Genererar en map med golfterm -> antalet förekomster hos en viss spelare beroende på skillnaden mellan par.
+ * T.ex. birdie = -1, bogey = 1
+ * Specialfallet hole-in-one hanteras också.
+ *  
+ * @param {*} player Spelarobjekt att generera mappen för
+ * @returns Lista med varje termsträng mappad till antalet förekomster hos spelarens slag
+ */
+function generateScoreTermsMap(player){
     let map = {};
 
     for(let holeInfo of player.store){
