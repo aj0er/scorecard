@@ -360,7 +360,9 @@ function startInput(){
             if(!largeInputs){
                 input.focus(); // Fokusera på det första input-elementet
             } else {
-                window.scrollTo(0, 300);
+                setTimeout(() => {
+                    window.scrollTo(0, 300);
+                }, 215);
             }
 
             first = false;

@@ -93,6 +93,14 @@ input[type=checkbox] {
     border-top: 1px solid black;
 }
 
+#actions button {
+    margin-bottom: 50px;
+}
+
+.divider {
+    margin-top: 20rem;
+}
+
 @media screen and (min-width: 1080px){
     #a11y-game {
         width: 50%;
