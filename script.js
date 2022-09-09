@@ -4,6 +4,7 @@ const holes = document.getElementById("holes");
 const info = document.getElementById("info");
 const win = document.getElementById("win");
 const scores = document.getElementById("scores");
+const table = document.getElementById("table");
 
 const holeNumber = document.getElementById("holeNumber");
 const holeRules = document.getElementById("holeRules");
@@ -14,6 +15,8 @@ const scoreTerms = { "0": "Par", "1": "Bogey", "2": "Double Bogey", "-1": "Birdi
 
 const strokesText = "Slag";
 const pointsText = "Poäng";
+
+const a11yGame = document.getElementById("a11y-game");
 
 let currentHole = 0;
 let totalPointsElement = document.getElementById("totalPointsText");
@@ -26,15 +29,14 @@ let startHole = 0;
 
 let playerNodes = {};
 let players = [];
+let largeInputs = false;
+
+const endGameButton = document.getElementById("endGame");
+endGameButton.addEventListener("click", endGame);
 
 const holeButton = document.getElementById("holeAction"); 
 holeButton.addEventListener("click", () => {
     switch(holeButton.innerText){
-        case "Avsluta spelet":{
-            endGame();
-            break;
-        }
-
         case "Fyll i slag":{
             startInput();
 
@@ -56,14 +58,14 @@ function checkEnd(){
         return;
 
     if(currentHole == startHole - 1 || (currentHole == currentCourse.court.length - 1 && startHole == 0)){
-        holeButton.innerText = "Avsluta spelet";
+        holeButton.remove();
         return true;
     } 
     
     return false;
 }
 
-function startGame(start, gamePlayers, currentHoleSaved = undefined){
+function startGame(start, gamePlayers, largeBoxes, currentHoleSaved = undefined){
     let isRestored = currentHoleSaved != undefined;
 
     start -= 1;
@@ -77,6 +79,7 @@ function startGame(start, gamePlayers, currentHoleSaved = undefined){
 
     startHole = start;
     players = gamePlayers;
+    largeInputs = largeBoxes;
 
     if(players.length >= 4){ // Det finns många spelare i spelet, använd kortare text för att spara plats
         shortTextMode = true;
@@ -118,8 +121,10 @@ function restorePlayer(player, idx){
         if(idx == 0) // Lägg till hål för första spelaren då antalet hål är samma för alla spelare
             addHole(hole.hole);
 
-        let input = addPlayerInput(player.id, holeId, holeIdx);
+        let input = addPlayerInput(player.id);
         input.value = holeValue;
+        attachInputInfo(input, player.id, holeId, holeIdx);
+        addInputHandler(input);
 
         let points = calculatePoints(holeValue, currentCourse.court[holeId].par); 
         updatePlayerPointsText(player.id, holeIdx, points);
@@ -128,13 +133,21 @@ function restorePlayer(player, idx){
     updateTotalPoints(player);
 }
 
+function addInputHandler(input){
+    input.addEventListener("change", (e) => handleNumInput(e.target));
+}
+
 function endGame(){
     if(ended)
+        return;
+
+    if(!confirm("Vill du verkligen avsluta spelet?"))
         return;
 
     ended = true;
     window.localStorage.removeItem("savedGame"); // Ta bort det sparade spelet då det inte behövs längre
 
+    restoreTableView();
     scrollToTop();
 
     info.style.display = "none";
@@ -145,13 +158,14 @@ function endGame(){
         }
     }
 
-    holeButton.disabled = true;
+    holeButton.remove();
+    endGameButton.disabled = true;
 
     let prev = 0;
     let winningPlayer = null;
     for(let i in players){ // Hitta spelaren med minst poäng (bäst resultat)
         let player = players[i];
-        let points = getTotalPoints(player);
+        let points = getTotalPoints(player)[0];
 
         if(i == 0 || points <= prev){
             prev = points;
@@ -165,7 +179,6 @@ function endGame(){
     // Lägg till alla spelares "golftermer", t.ex. "Birdie", "Hole-in-one"
     for(let player of players){
         const scoreMap = calculateScoreTerms(player);
-        const totalStrokes = getTotalStrokes(player);
 
         let main = document.createElement("div");
         main.appendChild(createTextDiv(createText(player.name)));
@@ -175,7 +188,6 @@ function endGame(){
             main.appendChild(createTextDiv(createText(score)));
         }
 
-        main.appendChild(createTextDiv(createText(totalStrokes.toString())));
         scores.appendChild(main);
     }
 }
@@ -224,13 +236,25 @@ function addPlayerNode(player){
     playerNodes[player.id] = main;
 }
 
-function updatePlayerPointsText(playerId, hole, value){
+function getPlayerHoleElement(playerId, hole){
     let node = playerNodes[playerId];
-    let pointText = node.children[hole + 2].children[1].children[0]; // Texten inne i poängdiven
+    return node.children[hole + 2];
+}
+
+function updatePlayerPointsText(playerId, hole, value){
+    let pointText = getPlayerHoleElement(playerId, hole).children[1].children[0]; // Texten inne i poängdiven
     pointText.innerText = isNaN(value) ? "-" : value.toString();
 }
 
+function updatePlayerPointsValue(playerId, hole, value){
+    let scoreInput = getPlayerHoleElement(playerId, hole).children[0].children[0];
+    scoreInput.value = value;
+}
+
 function nextHole(){
+    if(largeInputs)
+        restoreTableView();
+    
     scrollToTop(); // Scrolla till toppen så att användaren kan se regler för hålet
 
     currentHole++;
@@ -265,19 +289,21 @@ function hasCurrentInput(){
     return false;
 }
 
-function addPlayerInput(playerId, hole, holeIdx){
+function addPlayerInput(playerId){
     let player = playerNodes[playerId];
     let playerHole = createPlayerHole();
 
     let holeEl = playerHole.hole;
     let input = playerHole.input;
-    input.hole = hole;
-    input.player = playerId;
-    input.holeIdx = holeIdx;
-    input.addEventListener("change", handleNumInput);
 
     player.insertBefore(holeEl, player.totalPoints); // Lägg till elementet före "Totala poäng"-texten som alltid ska vara sist.
     return input;
+}
+
+function attachInputInfo(input, playerId, hole, holeIdx){
+    input.hole = hole;
+    input.player = playerId;
+    input.holeIdx = holeIdx;
 }
 
 function addHole(currentHole){
@@ -289,27 +315,62 @@ function getPlayerById(id){
     return players.find(p => p.id == id);
 }
 
+function addLargeInput(playerName){
+    let elements = createLargeInput(playerName);
+    let main = elements.main;
+    let input = elements.input;
+    a11yGame.appendChild(main);
+
+    return input;
+}
+
+function restoreTableView(){
+    if(!largeInputs)
+        return;
+
+        table.style.display = "block";
+        a11yGame.innerHTML = "";
+}
+
 function startInput(){
     addHole(currentHole);
 
     let first = true;
     for(let playerId of Object.keys(playerNodes)){
-        let input = addPlayerInput(playerId, currentHole, holes.children.length - 4);
+        let player = getPlayerById(playerId);
+        let hole = currentHole;
+        let holeIdx = holes.children.length - 4;
+
+        let input;
+
+        let normal = addPlayerInput(playerId);
+        addInputHandler(normal);
+        
+        if(!largeInputs){
+            input = normal; 
+        } else {
+            table.style.display = "none";
+            input = addLargeInput(player.name);
+            addInputHandler(input);
+        }
+
+        input.hole = hole;
+        input.player = playerId;
+        input.holeIdx = holeIdx;
+
         if(first){
             input.focus(); // Fokusera på det första input-elementet
-            setTimeout(() => window.scrollBy(0, 300), 10);
             first = false;
         }
 
-        getPlayerById(playerId).store.push({
+        player.store.push({
             hole: currentHole,
             value: 0,
         });
     }
 }
 
-function handleNumInput(e){
-    let target = e.target;
+function handleNumInput(target){
     let value = parseInt(target.value);
 
     let playerId = target.player;
@@ -323,15 +384,21 @@ function handleNumInput(e){
     player.store[holeIdx].value = value;
 
     let points = calculatePoints(value, par); 
-    updatePlayerPointsText(playerId, holeIdx, points);
 
+    if(largeInputs){
+        updatePlayerPointsValue(playerId, holeIdx, value);
+    }
+
+    updatePlayerPointsText(playerId, holeIdx, points);
     updateTotalPoints(player);
+
     saveState();
 }
 
 function updateTotalPoints(player){
     let totalPointsElement = playerNodes[player.id].totalPoints.children[0]; // p-taggen inne i total points diven
-    totalPointsElement.innerText = getTotalPoints(player);
+    let totalPoints = getTotalPoints(player);
+    totalPointsElement.innerText = `${totalPoints[0]} (${totalPoints[1]})`;
 }
 
 function saveState(){
@@ -339,7 +406,8 @@ function saveState(){
         players: players,
         startHole: startHole + 1,
         currentHole: currentHole,
-        course: currentCourseUrl
+        course: currentCourseUrl,
+        largeInputs: largeInputs
     }
 
     window.localStorage.setItem("savedGame", JSON.stringify(state));
@@ -356,6 +424,10 @@ function removePlayer(e){
 
     const target = e.target;
     const playerId = target.player;
+
+    let player = getPlayerById(playerId);
+    if(!confirm(`Vill du verkligen ta bort spelaren ${player.name}?`))
+        return;
 
     playersElement.removeChild(playerNodes[playerId]);
     delete playerNodes[playerId];
@@ -375,17 +447,19 @@ function getTotalStrokes(player){
 }
 
 function getTotalPoints(player){
-    let total = 0;
+    let totalStrokes = 0;
+    let totalPoints = 0;
 
     for(let holeInfo of player.store){
         let strokes = holeInfo.value;
         let par = currentCourse.court[holeInfo.hole].par;
 
         let points = calculatePoints(strokes, par);
-        total += isNaN(points) ? 0 : points;
+        totalStrokes += isNaN(strokes) ? 0 : strokes;
+        totalPoints  += isNaN(points) ? 0 : points;
     }
 
-    return total;
+    return [totalPoints, totalStrokes];
 }
 
 function calculateScoreTerms(player){

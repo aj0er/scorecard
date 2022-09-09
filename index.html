@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <h1>Digital Score Card</h1>
+    <h1>Scorekort</h1>
     <div id="start">
         <h2 id="courseSelected"></h2>
 
@@ -31,6 +31,12 @@
         </div>
 
         <div id="finish">
+
+            <div id="accessibility">
+                <h3>Tillgänglighet</h5>
+                <input type="checkbox" name="bigBox" id="largeInputs" autocomplete="off"></input><label for="bigBox">Aktivera stora textrutor</label>
+            </div>
+
             <h3>Lägg till spelare</h3>
             <div id="playerList"></div>
             <button id="startButton">Starta spelet</button>
@@ -71,6 +77,9 @@
             </div>
         </div>
 
+        <div id="a11y-game">
+        </div>
+
         <div id="win">
             <div id="scoretable">
                 <div id="scores" class="green">
@@ -96,9 +105,6 @@
                         <div class="flex border">
                             <p><i>Hole-in-one</i></p>
                         </div>
-                        <div class="flex border">
-                            <p><i>Tot. slag</i></p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -106,13 +112,14 @@
 
         <div id="actions">
             <button id="holeAction" style="margin-bottom: 50px;">Nästa hål</button>
+            <button id="endGame" style="margin-bottom: 50px;">Avsluta spelet</button>
         </div>
     </div>
 
     <button id="removeSaved">Rensa sparat spel</button>
 
-    <div style="height: 40rem">
-    </div>
+    <div style="height: 20rem"></div>
+
 </body>
 
 </html>

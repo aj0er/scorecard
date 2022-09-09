@@ -47,6 +47,33 @@ input[type=number]{
     border: none;
 }
 
+input[type=checkbox] {
+    transform: scale(2.5);
+}
+
+#accessibility {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+#a11y-game input {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+#accessibility label {
+    margin-left: 20px;
+    font-size: 20px;
+}
+
+.largeButton {
+    padding: 20px 30px;
+    border: 1px solid black;
+    font-size: 26px;
+    background-color: beige;
+    cursor: pointer;
+}
+
 #win {
     display: none;
 }
@@ -61,7 +88,7 @@ input[type=number]{
     border-top: 1px solid black;
 }
 
-@media screen and (max-width: 768px){
+@media screen and (max-width: 1080px){
     #table, #scoretable {
         width: 100%;
     }

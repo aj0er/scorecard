@@ -15,6 +15,45 @@ function createPlayerHole(){
     };
 }
 
+function createLargeInput(name){
+    let main = document.createElement("div");
+    let div = document.createElement("div");
+    div.className = "flex";
+
+    let input = createNum();
+    input.placeholder = "Slag för " + name;
+
+    let addBtn = document.createElement("div");
+    addBtn.className = "largeButton";
+    addBtn.innerText = "+";
+    addBtn.addEventListener("click", () => {
+        let val = parseInt(input.value);
+        input.value = isNaN(val) ? 1 : val + 1;
+        input.dispatchEvent(new Event("change"));
+    });
+
+    let removeBtn = document.createElement("div");
+    removeBtn.className = "largeButton";
+    removeBtn.innerText = "-";
+    removeBtn.addEventListener("click", (e) => {
+        let val = parseInt(input.value);
+        input.value = isNaN(val) ? -1 : val - 1;
+        input.dispatchEvent(new Event("change"));
+    });
+
+    div.appendChild(addBtn);
+    div.appendChild(input);
+    div.appendChild(removeBtn);
+
+    main.appendChild(createText(name));
+    main.appendChild(div);
+
+    return {
+        main: main,
+        input: input
+    };
+}
+
 function createTextDiv(value){
     let div = document.createElement("div");
     div.className = "flex border";

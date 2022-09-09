@@ -8,6 +8,8 @@ const course = document.getElementById("course");
 const playerList = document.getElementById("playerList");
 const removeSaved = document.getElementById("removeSaved");
 
+const largeInputBox = document.getElementById("largeInputs");
+
 selectButton.addEventListener("click", selectCourse);
 document.getElementById("startButton").addEventListener("click", prepareStart);
 
@@ -43,10 +45,13 @@ async function restoreSavedGame(){
         currentCourse = await fetchCourseInfo(game.course);
         currentCourseUrl = game.course;
 
-        startGame(game.startHole, game.players, game.currentHole);
+        startGame(game.startHole, game.players, game.largeInputs, game.currentHole);
 
         removeSaved.style.display = "inline";
         removeSaved.addEventListener("click", () => {
+            if(!confirm("Vill du verkligen rensa sparat spel?"))
+                return;
+                
             window.localStorage.removeItem("savedGame");
             location.reload();
         });
@@ -55,6 +60,7 @@ async function restoreSavedGame(){
 
 function prepareStart(){
     startHole = parseInt(holeList.value);
+    largeInputs = largeInputBox.checked;
 
     if(isNaN(startHole))
         startHole = 0;
@@ -79,7 +85,7 @@ function prepareStart(){
       return;
     }
 
-    startGame(startHole, players);
+    startGame(startHole, players, largeInputs);
 }
 
 function startCourse(id){
