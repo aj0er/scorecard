@@ -421,7 +421,7 @@ function startInput(){
             } else {
                 setTimeout(() => {
                     window.scrollTo(0, 300);
-                }, 215);
+                }, 120);
             }
 
             first = false;
