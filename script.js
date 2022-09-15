@@ -35,7 +35,9 @@ const endGameButton = document.getElementById("endGame");
 endGameButton.addEventListener("click", endGame);
 
 const holeButton = document.getElementById("holeAction"); 
-holeButton.addEventListener("click", () => {
+holeButton.addEventListener("click", onHoleAction);
+
+function onHoleAction(){
     switch(holeButton.innerText){
         case "Fyll i slag":{
             startInput();
@@ -51,8 +53,12 @@ holeButton.addEventListener("click", () => {
             nextHole();
         }
     }
-});
+}
 
+/**
+ * Kollar om spelet är redo att avslutas, dvs om spelet gått om så att nästa hål skulle vara starthålet. 
+ * @returns Om spelet är redo att avslutas
+ */
 function checkEnd(){
     if(!hasCurrentInput())
         return;
@@ -146,10 +152,18 @@ function restorePlayer(player, idx){
     updateTotalPointsElement(player);
 }
 
+/**
+ * Lägger till en event listener så att en input-tag uppdaterar poäng och liknand. 
+ * @param {*} input Input-element att lägga listener på
+ */
 function addInputHandler(input){
     input.addEventListener("change", (e) => handleNumInput(e.target));
 }
 
+/**
+ * Avslutar hela spelet. Tar bort spelet från localStorage, inaktiverar alla inputs i tabellen, 
+ * skriver ut vem som vann spelet och vilka golftermer de åstadkom.
+ */
 function endGame(){
     if(ended)
         return;
@@ -255,18 +269,36 @@ function addPlayerNode(player){
     playerNodes[player.id] = main;
 }
 
-function getPlayerHoleElement(playerId, hole){
+/**
+ * Hämtar hål-diven i tabellen som innehåller input-tag och poängtext. 
+ * @param {*} playerId Spelarens id
+ * @param {*} holeIdx Hålets index 
+ * @returns Hål-elementet
+ */
+function getPlayerHoleElement(playerId, holeIdx){
     let node = playerNodes[playerId];
-    return node.children[hole + 2];
+    return node.children[holeIdx + 2];
 }
 
-function updatePlayerPointsText(playerId, hole, value){
-    let pointText = getPlayerHoleElement(playerId, hole).children[1].children[0]; // Texten inne i poängdiven
+/**
+ * Uppdaterar spelarens poäng (text-värde) för ett hål i tabellen.
+ * @param {*} playerId Spelarens id
+ * @param {*} holeIdx Hålets index
+ * @param {*} value Nya värdet för poängtexten
+ */
+function updatePlayerPointsText(playerId, holeIdx, value){
+    let pointText = getPlayerHoleElement(playerId, holeIdx).children[1].children[0]; // Texten inne i poängdiven
     pointText.innerText = isNaN(value) ? "-" : value.toString();
 }
 
-function updatePlayerPointsValue(playerId, hole, value){
-    let scoreInput = getPlayerHoleElement(playerId, hole).children[0].children[0];
+/**
+ * Uppdaterar spelarens poäng (inputen) för ett hål i tabellen. 
+ * @param {*} playerId Spelarens id
+ * @param {*} holeIdx Hålets index
+ * @param {*} value Nya värdet för input-taggen
+ */
+function updatePlayerPointsInput(playerId, holeIdx, value){
+    let scoreInput = getPlayerHoleElement(playerId, holeIdx).children[0].children[0];
     scoreInput.value = value;
 }
 
@@ -457,7 +489,7 @@ function handleNumInput(target){
     let points = calculatePoints(value, par); 
 
     if(largeInputs) // Uppdatera värdet i den faktiska tabellen
-        updatePlayerPointsValue(playerId, holeIdx, value);
+        updatePlayerPointsInput(playerId, holeIdx, value);
 
     updatePlayerPointsText(playerId, holeIdx, points);
     updateTotalPointsElement(player);
